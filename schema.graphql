@@ -1,0 +1,76 @@
+"A datetime string with format `Y-m-d H:i:s`, e.g. `2018-01-01 13:00:00`."
+scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+"A date string with format `Y-m-d`, e.g. `2011-05-23`."
+scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
+
+type Query {
+    estados: [Estado!]! @all
+    estado(id: Int! @eq(key: "id_estado")): Estado @find
+
+    asistentes: [Asistente!] @all
+    asistente(id: Int! @eq(key: "id_asistente")): Asistente @find
+
+    conferencias: [Conferencia!]! @all
+    conferencia(id: Int! @eq(key: "id_conferencia")): Conferencia @find
+
+    administrador(id: Int! @eq(key: "id_administrador")): Administrador @find 
+}
+
+type Mutation {
+  agregarEstado(nombre: String! @spread): Estado @create
+  agregarAdministrador(usuario: String! @spread, contrasena: String! @hash, token: String!, tipoAdministrador: Int!): Administrador  @method(name: "login")
+}
+
+type Estado {
+    id: ID! @method(name: "idEstado")
+    nombre: String!
+}
+
+type TipoAsistente {
+  id: ID! @method(name: "idTipoAsistente")
+  nombre: String!
+}
+
+type TipoConferencia {
+  id: ID! @method(name: "idTipoConferencia")
+  nombre: String!
+}
+
+type Conferencia {
+  id: ID! @method(name: "idConferencia")
+  nombre: String!
+  obligatoria: Boolean!
+  tipo: TipoConferencia! @hasOne
+}
+
+type Asistencia {
+  conferencia: Conferencia! @hasOne
+  horaRegistro: DateTime!
+}
+
+type Asistente {
+  id: ID! @method(name: "idAsistente")
+  folio: String!
+  nombre: String!
+  apellidoPaterno: String!
+  apellidoMaterno: String!
+  estado: Estado! @hasOne
+  correo: String!
+  telefono: String!
+  correo: String!
+  facebook: String!
+  tipoAsistente: TipoAsistente! @hasOne
+  asistencias: [Asistencia!]! @hasMany
+}
+
+type Administrador {
+  id: ID! @method(name: "idAdministrador")
+  usuario: String!
+  permiso: TipoAdministrador! @hasOne
+}
+
+type TipoAdministrador {
+  id: ID! @method(name: "idTipoAdministrador")
+  nombre: String!
+}
